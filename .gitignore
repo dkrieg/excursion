@@ -1,0 +1,10 @@
+/RUNNING_PID
+/logs/
+/project/*-shim.sbt
+/project/project/
+/project/target/
+/target/
+/project/.sbtserver
+/project/.sbtserver.lock
+.idea
+.sbtserver
