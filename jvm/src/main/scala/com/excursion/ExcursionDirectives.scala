@@ -24,7 +24,7 @@ object Pages {
     )
   }
 
-  val hello = script("com.excursion.HelloExample().main()")
+  val hello = script("com.excursion.client.HelloExample().main()")
 }
 
 class ExcursionDirectives(implicit production: Boolean = false) extends Directives {

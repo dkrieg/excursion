@@ -123,7 +123,7 @@ object Settings {
   object versions {
     val scala = "2.11.6"
     val scalajsReact = "0.9.0"
-//    val scalaCSS = "0.2.0"
+    val scalaCSS = "0.2.0"
     val react = "0.12.1"
     val jQuery = "1.11.1"
     val bootstrap = "3.3.2"
@@ -151,7 +151,7 @@ object Settings {
   val clientDependencies = setting(Seq(
     "com.github.japgolly.scalajs-react" %%% "core"        % versions.scalajsReact,
     "com.github.japgolly.scalajs-react" %%% "extra"       % versions.scalajsReact,
-//    "com.github.japgolly.scalacss"      %%% "ext-react"   % versions.scalaCSS,
+    "com.github.japgolly.scalacss"      %%% "ext-react"   % versions.scalaCSS,
     "org.scala-js"                      %%% "scalajs-dom" % versions.scalajsDom,
     "com.lihaoyi"                       %%% "scalarx"     % versions.scalaRx
   ))
