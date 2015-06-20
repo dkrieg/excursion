@@ -1,8 +1,8 @@
-package com.excursion
+package com.excursion.client
 
 import japgolly.scalajs.react.React.render
+import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{React, ReactComponentB}
 import org.scalajs.dom
 
 import scala.scalajs.js.JSApp

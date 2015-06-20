@@ -1,4 +1,4 @@
-package com.excursion
+package com.excursion.server
 
 import akka.http.scaladsl.marshalling.MediaTypeOverrider._
 import akka.http.scaladsl.model.HttpResponse
@@ -24,7 +24,7 @@ object Pages {
     )
   }
 
-  val hello = script("com.excursion.HelloExample().main()")
+  val hello = script("com.excursion.client.HelloExample().main()")
 }
 
 class ExcursionDirectives(implicit production: Boolean = false) extends Directives {

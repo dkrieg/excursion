@@ -1,12 +1,12 @@
-package com.excursion
+package com.excursion.server
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route.handlerFlow
 import akka.stream.ActorFlowMaterializer
 import akka.stream.scaladsl.Sink
+import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory.systemEnvironment
-import com.typesafe.config.{ConfigFactory, Config}
 
 
 object Boot extends App {
