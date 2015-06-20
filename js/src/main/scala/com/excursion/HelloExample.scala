@@ -9,13 +9,14 @@ import scala.scalajs.js.JSApp
 import scala.scalajs.js.annotation.JSExport
 
 object HelloExample extends JSApp {
-  val Hello = ReactComponentB[String]("HelloMessage")
-    .render(name => <.div("Hello ", name))
-    .build
+  val Hello =
+    ReactComponentB[String]("HelloMessage").
+    render(name => <.div(s"Hello $name")).
+    build
 
   @JSExport
   override def main(): Unit = {
-    dom.console.info("Router logging is enabled. Enjoy!")
+    dom.console.info("JSApp is running")
     render(Hello("World"), dom.document.body)
   }
 }

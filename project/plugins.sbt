@@ -1,0 +1,7 @@
+addSbtPlugin("com.typesafe.sbt" % "sbt-less" % "1.0.6")
+addSbtPlugin("org.scala-sbt" % "sbt-core-next" % "0.1.1")
+addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.0.0-RC1")
+addSbtPlugin("io.spray" % "sbt-revolver" % "0.7.2")
+addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.3")
+addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.5")
+addSbtPlugin("com.lihaoyi" % "workbench" % "0.2.3")
