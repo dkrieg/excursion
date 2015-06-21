@@ -133,6 +133,7 @@ object Settings {
     val scalatags = "0.5.2"
     val scalajsDom = "0.8.0"
     val scalaRx = "0.2.8"
+    val scalaz = "7.1.3"
   }
 
   val sharedDependencies = setting(Seq(
@@ -145,6 +146,7 @@ object Settings {
 
   val serverDependencies = setting(Seq(
     "com.typesafe.akka" %% "akka-http-experimental" % versions.akkaHttp,
+    "org.scalaz"        %% "scalaz-core"            % versions.scalaz,
     "com.lihaoyi"       %% "scalatags"              % versions.scalatags
    ))
 

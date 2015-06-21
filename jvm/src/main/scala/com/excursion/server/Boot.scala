@@ -1,12 +1,11 @@
-package com.excursion
+package com.excursion.server
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route.handlerFlow
 import akka.stream.ActorFlowMaterializer
 import akka.stream.scaladsl.Sink
-import com.typesafe.config.ConfigFactory.systemEnvironment
-import com.typesafe.config.{ConfigFactory, Config}
+import com.typesafe.config.Config
 
 
 object Boot extends App {
@@ -14,8 +13,9 @@ object Boot extends App {
   implicit val fm = ActorFlowMaterializer()
   implicit val context = system.dispatcher
 
-  val conf = Conf(systemEnvironment().withFallback(system.settings.config))
+  val conf = Conf(system.settings.config)
   implicit val PRODUCTION_MODE = conf.production
+  implicit val todoService = new TodoApiService
 
   val flow = Http(system).bind(conf.host, conf.port).to(Sink.foreach {
     _ handleWith handlerFlow(new ExcursionDirectives().route)
