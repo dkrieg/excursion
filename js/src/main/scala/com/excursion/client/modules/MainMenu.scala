@@ -1,7 +1,7 @@
 package com.excursion.client.modules
 
 import japgolly.scalajs.react.extra.router2.RouterCtl
-import com.excursion.client.TodoApp.{TodoLoc, DashboardLoc, Loc}
+import com.excursion.client.DemoApp.{ChatLoc, TodoLoc, DashboardLoc, Loc}
 
 import scalacss.ScalaCssReact._
 import japgolly.scalajs.react._
@@ -40,30 +40,32 @@ object MainMenu {
     val todoCount = props.todos().count(!_.completed)
     Seq(
       <.span("Todo "),
-      if (todoCount > 0) <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, todoCount) else <.span()
+      if (todoCount > 0) <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, todoCount)
+      else <.span()
     )
   }
 
   private val menuItems = Seq(
     MenuItem(_ => "Dashboard", Icon.dashboard, DashboardLoc),
-    MenuItem(buildTodoMenu, Icon.check, TodoLoc)
+    MenuItem(buildTodoMenu, Icon.check, TodoLoc),
+    MenuItem(_ => "Chat", Icon.envelope, ChatLoc)
   )
 
-  private val MainMenu = ReactComponentB[Props]("MainMenu")
-    .stateless
-    .backend(new Backend(_))
-    .render((P, _, B) => {
-    <.ul(bss.navbar)(
-      // build a list of menu items
-      for (item <- menuItems) yield {
-        <.li((P.currentLoc == item.location) ?= (^.className := "active"),
-          P.ctl.link(item.location)(item.icon, " ", item.label(P))
-        )
-      }
-    )
-  })
-    .componentDidMount(_.backend.mounted())
-    .build
+  private val MainMenu = ReactComponentB[Props]("MainMenu").
+    stateless.
+    backend(new Backend(_)).
+    render((P, _, B) => {
+      <.ul(bss.navbar)(
+        // build a list of menu items
+        for (item <- menuItems) yield {
+          <.li((P.currentLoc == item.location) ?= (^.className := "active"),
+            P.ctl.link(item.location)(item.icon, " ", item.label(P))
+          )
+        }
+      )
+    }).
+    componentDidMount(_.backend.mounted()).
+    build
 
   def apply(props: Props) = MainMenu(props)
 }

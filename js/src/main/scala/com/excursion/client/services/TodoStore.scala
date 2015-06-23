@@ -50,14 +50,14 @@ object TodoStore extends TodoStore {
 }
 
 object TodoActions {
-  def updateTodo(item: TodoItem) = {
+  def update(item: TodoItem) = {
     // inform the server to update/add the item
     AjaxClient[TodoApi].update(item).call().foreach { todos =>
       MainDispatcher.dispatch(UpdateAllTodos(todos))
     }
   }
 
-  def deleteTodo(item: TodoItem) = {
+  def delete(item: TodoItem) = {
     // tell server to delete a todo
     AjaxClient[TodoApi].delete(item.id).call().foreach { todos =>
       MainDispatcher.dispatch(UpdateAllTodos(todos))

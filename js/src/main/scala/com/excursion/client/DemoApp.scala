@@ -8,23 +8,27 @@ import com.excursion.client.components.GlobalStyles
 import com.excursion.client.logger._
 import com.excursion.client.modules._
 import com.excursion.client.services.TodoStore
+import org.scalajs.dom.WebSocket
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
 import scalacss.Defaults._
 import scalacss.ScalaCssReact._
 
-object TodoApp extends js.JSApp {
+object DemoApp extends js.JSApp {
   sealed trait Loc
   case object DashboardLoc extends Loc
   case object TodoLoc extends Loc
+  case object ChatLoc extends Loc
 
-  val routerConfig = RouterConfigDsl[Loc].buildConfig { dsl =>
+  def routerConfig(baseUrl: BaseUrl) = RouterConfigDsl[Loc].buildConfig { dsl =>
     import dsl._
 
-    (staticRoute(root, DashboardLoc) ~> renderR(ctl => Dashboard.component(ctl))
-      | staticRoute("#todo", TodoLoc) ~> renderR(ctl => Todo(TodoStore)(ctl))
-      ).notFound(redirectToPage(DashboardLoc)(Redirect.Replace))
+    (
+      staticRoute(root, DashboardLoc) ~> renderR(ctl => Dashboard.component(ctl)) |
+      staticRoute("#todo", TodoLoc)   ~> renderR(ctl => Todo(TodoStore)(ctl)) |
+      staticRoute("#chat", ChatLoc)   ~> renderR(ctl => Chat(Chat.Props(baseUrl)))
+    ).notFound(redirectToPage(DashboardLoc)(Redirect.Replace))
   }.renderWith(layout)
 
   def layout(c: RouterCtl[Loc], r: Resolution[Loc]) = {
@@ -49,6 +53,7 @@ object TodoApp extends js.JSApp {
     log.info("This message goes to server as well")
 
     GlobalStyles.addToDocument()
-    val router = Router(BaseUrl(dom.window.location.href.takeWhile(_ != '#')), routerConfig)
+    val baseUrl = BaseUrl(dom.window.location.href.takeWhile(_ != '#'))
+    val router = Router(baseUrl, routerConfig(baseUrl))
     React.render(router(), dom.document.body)
   }}

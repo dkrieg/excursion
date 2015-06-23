@@ -1,57 +1,45 @@
 package com.excursion.server
 
 import java.nio.ByteBuffer
+import java.time.LocalTime
 
-import akka.http.scaladsl.marshalling.MediaTypeOverrider._
-import akka.http.scaladsl.model.HttpEntity.Strict
-import akka.http.scaladsl.model.{RequestEntity, HttpEntity, HttpResponse}
+import akka.actor.ActorSystem
 import akka.http.scaladsl.model.MediaTypes._
-import akka.http.scaladsl.model.StatusCodes.{NotFound, OK, InternalServerError}
-import akka.http.scaladsl.server.RouteResult.Complete
-import akka.http.scaladsl.server.{RouteResult, StandardRoute, Route, Directives}
+import akka.http.scaladsl.model.StatusCodes.{NotFound, OK}
+import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
+import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
+import akka.http.scaladsl.server.Directives
 import akka.stream.FlowMaterializer
-import akka.stream.scaladsl.{Flow, Sink, Source}
+import akka.stream.scaladsl.Flow
+import akka.stream.stage.{TerminationDirective, SyncDirective, Context, PushStage}
 import akka.util.ByteString
 import autowire.Core
 import boopickle.{Pickle, Pickler, Unpickle, Unpickler}
-import com.excursion.shared.TodoApi
+import com.excursion.server.Pages._
+import com.excursion.shared.{ChatMessage, TodoApi}
 
-import scala.concurrent.{Awaitable, Await, ExecutionContextExecutor, Future}
-import scala.util.{Success, Try, Failure}
-import scalatags.Text
-
+import scala.concurrent.ExecutionContextExecutor
 import scala.concurrent.duration._
 
-object Router extends autowire.Server[ByteString, Unpickler, Pickler] {
-  def read[Result: Unpickler](p: ByteString) = Unpickle[Result].fromBytes(p.asByteBuffer)
-  def write[Result: Pickler](r: Result) = ByteString(Pickle.intoBytes(r))
-}
-
-object Pages {
-  import scalatags.Text.all._
-
-  def template(ops: String)(program: Text.TypedTag[String]): Text.TypedTag[String] = {
-    html(
-      head(
-        meta(content:="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no", name:="viewport"),
-        link(href:="stylesheets/main.min.css", rel:="stylesheet", `type`:="text/css")
-      ),
-      body(
-        script(src:=s"js/excursion-$ops.js"),
-        script(src:="js/excursion-jsdeps.js"),
-        program
-      )
-    )
-  }
-
-  val todo = script("com.excursion.client.TodoApp().main()")
+object Router extends autowire.Server[ByteBuffer, Unpickler, Pickler] {
+  def read[Result: Unpickler](p: ByteBuffer) = Unpickle[Result].fromBytes(p)
+  def write[Result: Pickler](r: Result) = Pickle.intoBytes(r)
 }
 
 class ExcursionDirectives(implicit production: Boolean = false,
                           fm: FlowMaterializer,
+                          system: ActorSystem,
                           todoService: TodoApiService,
-                          dispatcher: ExecutionContextExecutor) extends Directives {
-  import Pages._
+                          chatService: Chat,
+                          dispatcher: ExecutionContextExecutor) extends Directives{
+  system.scheduler.schedule(15.second, 15.second) {
+    val time = LocalTime.now.toString
+    chatService.injectMessage(ChatMessage(
+      user = "clock", 
+      text = s"Bling! The time is $time.",
+      time = time
+    ))
+  }
 
   val page =
     if(production) template("fullopt") _
@@ -66,25 +54,42 @@ class ExcursionDirectives(implicit production: Boolean = false,
         else getFromDirectory("../")
       } ~ getFromResourceDirectory("web")
     } ~ post {
-      path("api" / Segments) { s =>
-        extract(_.request.entity) { entity: RequestEntity => ctx =>
-          val future = entity.toStrict(5.seconds).map { se: Strict =>
-            Router.route[TodoApi](todoService) {
-              val values = Unpickle[Map[String, ByteBuffer]].fromBytes(se.data.asByteBuffer).mapValues(ByteString(_))
-//              println(values)
-              Core.Request(s, values)
-            }.map(responseData => HttpResponse(entity = HttpEntity(`application/octet-stream`, responseData)))
-          }
-          Await.result(future, 5.seconds).map {
-            RouteResult.Complete
-          }
+      path("api" / Segments) { apiCalls =>
+        entity(as[ByteString]) { data => ctx =>
+          Router.route[TodoApi](todoService) {
+            Core.Request(apiCalls, Unpickle[Map[String, ByteBuffer]].fromBytes(data.asByteBuffer))
+          }.flatMap(resBuf => ctx.complete(HttpResponse(entity = HttpEntity(ByteString(resBuf)))))
         }
       } ~ path("logging") {
         entity(as[String]) { msg =>
-          ctx =>
             println(s"ClientLog: $msg")
-            ctx.complete(OK)
+            complete(OK)
         }
       }
+    } ~ path("chat") {
+      parameter('name) { name =>
+        println(s"chat flow initiated. $name")
+        handleWebsocketMessages(webSocketChatFlow(name))
+      }
     }
+
+  def webSocketChatFlow(sender: String): Flow[Message, Message, Unit] =
+    Flow[Message].
+      collect {case TextMessage.Strict(msg) => msg}.
+      via(chatService.chatFlow(sender)). 
+      map {case msg: ChatMessage => BinaryMessage.Strict(ByteString(Pickle.intoBytes(msg)))}.
+      via(reportErrorsFlow)
+
+  def reportErrorsFlow[T]: Flow[T, T, Unit] =
+    Flow[T].
+      transform(
+        () => new PushStage[T, T] {
+          def onPush(elem: T, ctx: Context[T]): SyncDirective = ctx.push(elem)
+
+          override def onUpstreamFailure(cause: Throwable, ctx: Context[T]): TerminationDirective = {
+            println(s"WS stream failed with $cause")
+            super.onUpstreamFailure(cause, ctx)
+          }
+        }
+      )
 }
