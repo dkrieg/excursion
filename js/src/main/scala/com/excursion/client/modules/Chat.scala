@@ -9,32 +9,31 @@ import japgolly.scalajs.react.extra.router2.BaseUrl
 import japgolly.scalajs.react.vdom.prefix_<^._
 import org.scalajs.dom
 import org.scalajs.dom._
-import org.scalajs.dom.html.{Input, TextArea}
+import org.scalajs.dom.html.{ Input, TextArea }
 
 import scala.scalajs.js.typedarray.TypedArrayBuffer.wrap
-import scala.scalajs.js.typedarray.{ArrayBuffer, TypedArrayBuffer}
+import scala.scalajs.js.typedarray.{ ArrayBuffer, TypedArrayBuffer }
 
 object Chat {
   case class Props(baseUrl: BaseUrl)
 
   case class State(
     messages: List[ChatMessage] = List.empty,
-    webSocket:Option[WebSocket] = None,
-    login: Option[String] = None
-  )
+    webSocket: Option[WebSocket] = None,
+    login: Option[String] = None)
 
   class Backend(t: BackendScope[Props, State]) extends OnUnmount {
     private def initWebSocket[T](wsUri: String) = {
       val ws = new WebSocket(wsUri)
-      ws.onmessage = { (evt: MessageEvent) =>
+      ws.onmessage = { (evt: MessageEvent) ⇒
         val reader = new dom.FileReader
-        reader.onloadend = { pe: ProgressEvent =>
+        reader.onloadend = { pe: ProgressEvent ⇒
           messageReceived(Unpickle[ChatMessage].fromBytes(wrap(reader.result.asInstanceOf[ArrayBuffer])))
         }
         reader.readAsArrayBuffer(evt.data.asInstanceOf[Blob])
       }
       onUnmount({
-        () => ws.close()
+        () ⇒ ws.close()
       })
       ws
     }
@@ -43,15 +42,14 @@ object Chat {
       log.info("logging into chat server")
       val ownerDocument = e.target.ownerDocument
       val userE = ownerDocument.getElementById("jabber-user").asInstanceOf[Input]
-      t.modState(s => s.copy(
+      t.modState(s ⇒ s.copy(
         webSocket = Some(initWebSocket(t.props.baseUrl.value.replace("http", "ws") + "chat?name=" + userE.value)),
-        login = Some(userE.value))
-      )
+        login = Some(userE.value)))
       t.forceUpdate()
     }
 
     def messageReceived(msg: ChatMessage) = {
-      t.modState(s => s.copy(messages = (msg :: s.messages).take(10)))
+      t.modState(s ⇒ s.copy(messages = (msg :: s.messages).take(10)))
       t.forceUpdate()
     }
 
@@ -62,53 +60,40 @@ object Chat {
     }
   }
 
-  val Chat =  ReactComponentB[Props]("Chat").
+  val Chat = ReactComponentB[Props]("Chat").
     initialState(State()).
     backend(new Backend(_)).
-    render((P, S, B) => {
+    render((P, S, B) ⇒ {
       def renderMessage(msg: ChatMessage) = {
-        <.div(^.`class`:="message",
-          <.p(^.`class`:="speech",
-            <.span(^.`class`:="dateTime", msg.time),
-            <.span(^.`class`:="text", msg.text),
-            <.span(^.`class`:="user", msg.user)
-          )
-        )
+        <.div(^.`class` := "message",
+          <.p(^.`class` := "speech",
+            <.span(^.`class` := "dateTime", msg.time),
+            <.span(^.`class` := "text", msg.text),
+            <.span(^.`class` := "user", msg.user)))
       }
-      <.div(^.`class`:="row",
-        <.div(^.`class`:="col-md-6",
+      <.div(^.`class` := "row",
+        <.div(^.`class` := "col-md-6",
           <.h4("Jabber"),
-          <.form(^.`class`:="form-horizontal",
-            <.div(^.`class`:="form-group",
-              if(S.login.isEmpty) {
+          <.form(^.`class` := "form-horizontal",
+            <.div(^.`class` := "form-group",
+              if (S.login.isEmpty) {
                 Seq(
-                  <.div(<.input(^.id:="jabber-user", ^.`class`:="form-control", ^.`type`:="text", ^.placeholder:="Enter your Username ...", ^.autoFocus:="true")),
+                  <.div(<.input(^.id := "jabber-user", ^.`class` := "form-control", ^.`type` := "text", ^.placeholder := "Enter your Username ...", ^.autoFocus := "true")),
                   <.p(
                     <.div(
-                      <.button(^.`type`:="button", ^.`class`:="btn btn-primary", ^.onClick==>B.connect, "Login")
-                    )
-                  )
-                )
+                      <.button(^.`type` := "button", ^.`class` := "btn btn-primary", ^.onClick ==> B.connect, "Login"))))
               } else {
                 Seq(
-                  <.div(<.textarea(^.id:="jabber-message", ^.`class`:="form-control", ^.rows:="3",^.cols:="70", ^.placeholder:="Enter your message ...")),
+                  <.div(<.textarea(^.id := "jabber-message", ^.`class` := "form-control", ^.rows := "3", ^.cols := "70", ^.placeholder := "Enter your message ...")),
                   <.p(
                     <.div(
-                      <.button(^.`type`:="button", ^.`class`:="btn btn-primary", ^.onClick==>B.sendMessage, "Jabber away")
-                    )
-                  )
-                )
-              })
-            )
-          ),
-        <.div(^.`class`:="col-md-1"),
-        <.div(^.`class`:="well col-md-5",
+                      <.button(^.`type` := "button", ^.`class` := "btn btn-primary", ^.onClick ==> B.sendMessage, "Jabber away"))))
+              }))),
+        <.div(^.`class` := "col-md-1"),
+        <.div(^.`class` := "well col-md-5",
           <.h4("Jibber Jabber"),
-          <.div(^.`class`:="messages",
-            S.messages map renderMessage
-          )
-        )
-      )
+          <.div(^.`class` := "messages",
+            S.messages map renderMessage)))
     }).
     configure(OnUnmount.install).
     build

@@ -21,14 +21,13 @@ object DemoApp extends js.JSApp {
   case object TodoLoc extends Loc
   case object ChatLoc extends Loc
 
-  def routerConfig(baseUrl: BaseUrl) = RouterConfigDsl[Loc].buildConfig { dsl =>
+  def routerConfig(baseUrl: BaseUrl) = RouterConfigDsl[Loc].buildConfig { dsl ⇒
     import dsl._
 
     (
-      staticRoute(root, DashboardLoc) ~> renderR(ctl => Dashboard.component(ctl)) |
-      staticRoute("#todo", TodoLoc)   ~> renderR(ctl => Todo(TodoStore)(ctl)) |
-      staticRoute("#chat", ChatLoc)   ~> renderR(ctl => Chat(Chat.Props(baseUrl)))
-    ).notFound(redirectToPage(DashboardLoc)(Redirect.Replace))
+      staticRoute(root, DashboardLoc) ~> renderR(ctl ⇒ Dashboard.component(ctl)) |
+      staticRoute("#todo", TodoLoc) ~> renderR(ctl ⇒ Todo(TodoStore)(ctl)) |
+      staticRoute("#chat", ChatLoc) ~> renderR(ctl ⇒ Chat(Chat.Props(baseUrl)))).notFound(redirectToPage(DashboardLoc)(Redirect.Replace))
   }.renderWith(layout)
 
   def layout(c: RouterCtl[Loc], r: Resolution[Loc]) = {
@@ -37,13 +36,9 @@ object DemoApp extends js.JSApp {
         <.div(^.className := "container")(
           <.div(^.className := "navbar-header")(<.span(^.className := "navbar-brand")("SPA Example")),
           <.div(^.className := "collapse navbar-collapse")(
-            MainMenu(MainMenu.Props(c, r.page, TodoStore.todos))
-          )
-        )
-      ),
+            MainMenu(MainMenu.Props(c, r.page, TodoStore.todos))))),
       // currently active module is shown in this container
-      <.div(^.className := "container")(r.render())
-    )
+      <.div(^.className := "container")(r.render()))
   }
 
   @JSExport
@@ -56,4 +51,5 @@ object DemoApp extends js.JSApp {
     val baseUrl = BaseUrl(dom.window.location.href.takeWhile(_ != '#'))
     val router = Router(baseUrl, routerConfig(baseUrl))
     React.render(router(), dom.document.body)
-  }}
+  }
+}

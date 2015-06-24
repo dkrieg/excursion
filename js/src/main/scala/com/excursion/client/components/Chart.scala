@@ -1,7 +1,7 @@
 package com.excursion.client.components
 
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{BackendScope, ReactComponentB}
+import japgolly.scalajs.react.{ BackendScope, ReactComponentB }
 import org.scalajs.dom.raw.HTMLCanvasElement
 
 import scala.scalajs.js
@@ -21,8 +21,7 @@ object ChartDataset {
       data = data.toJSArray,
       label = label,
       fillColor = fillColor,
-      strokeColor = strokeColor
-    ).asInstanceOf[ChartDataset]
+      strokeColor = strokeColor).asInstanceOf[ChartDataset]
   }
 }
 
@@ -35,8 +34,7 @@ object ChartData {
   def apply(labels: Seq[String], datasets: Seq[ChartDataset]): ChartData = {
     js.Dynamic.literal(
       labels = labels.toJSArray,
-      datasets = datasets.toJSArray
-    ).asInstanceOf[ChartData]
+      datasets = datasets.toJSArray).asInstanceOf[ChartData]
   }
 }
 
@@ -62,18 +60,18 @@ object Chart {
   class Backend(t: BackendScope[ChartProps, _])
 
   val Chart = ReactComponentB[ChartProps]("Chart")
-    .render((P) => {
-    <.canvas(^.width := P.width, ^.height := P.height)
-  }).componentDidMount(scope => {
-    // access context of the canvas
-    val ctx = scope.getDOMNode().asInstanceOf[HTMLCanvasElement].getContext("2d")
-    // create the actual chart using the 3rd party component
-    scope.props.style match {
-      case LineChart => new JSChart(ctx).Line(scope.props.data)
-      case BarChart => new JSChart(ctx).Bar(scope.props.data)
-      case _ => throw new IllegalArgumentException
-    }
-  }).build
+    .render((P) ⇒ {
+      <.canvas(^.width := P.width, ^.height := P.height)
+    }).componentDidMount(scope ⇒ {
+      // access context of the canvas
+      val ctx = scope.getDOMNode().asInstanceOf[HTMLCanvasElement].getContext("2d")
+      // create the actual chart using the 3rd party component
+      scope.props.style match {
+        case LineChart ⇒ new JSChart(ctx).Line(scope.props.data)
+        case BarChart ⇒ new JSChart(ctx).Bar(scope.props.data)
+        case _ ⇒ throw new IllegalArgumentException
+      }
+    }).build
 
   def apply(props: ChartProps) = Chart(props)
 }

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer
 import boopickle._
 import org.scalajs.dom
 
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.{ Future, Promise }
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.runNow
 import scala.scalajs.js.typedarray._
 
@@ -16,16 +16,16 @@ object AjaxClient extends autowire.Client[ByteBuffer, Unpickler, Pickler] {
 
   // Scala.js DOM 0.8.0 does not support binary data, so we implement this here
   def post(url: String,
-           data: ByteBuffer,
-           timeout: Int = 0,
-           headers: Map[String, String] = Map.empty,
-           withCredentials: Boolean = false,
-           responseType: String = "") = {
+    data: ByteBuffer,
+    timeout: Int = 0,
+    headers: Map[String, String] = Map.empty,
+    withCredentials: Boolean = false,
+    responseType: String = "") = {
 
     val req = new dom.XMLHttpRequest()
     val promise = Promise[dom.XMLHttpRequest]()
 
-    req.onreadystatechange = { (e: dom.Event) =>
+    req.onreadystatechange = { (e: dom.Event) ⇒
       if (req.readyState == 4) {
         if ((req.status >= 200 && req.status < 300) || req.status == 304)
           promise.success(req)
@@ -37,7 +37,7 @@ object AjaxClient extends autowire.Client[ByteBuffer, Unpickler, Pickler] {
     req.responseType = responseType
     req.timeout = timeout
     req.withCredentials = withCredentials
-    headers.foreach(x => req.setRequestHeader(x._1, x._2))
+    headers.foreach(x ⇒ req.setRequestHeader(x._1, x._2))
     req.send(data.typedArray())
     promise.future
   }
@@ -46,8 +46,7 @@ object AjaxClient extends autowire.Client[ByteBuffer, Unpickler, Pickler] {
     post(url = "/api/" + req.path.mkString("/"),
       data = Pickle.intoBytes(req.args),
       responseType = "arraybuffer",
-      headers = Map("Content-Type" -> "application/octet-stream")
-    ).map(r => TypedArrayBuffer.wrap(r.response.asInstanceOf[ArrayBuffer]))
+      headers = Map("Content-Type" -> "application/octet-stream")).map(r ⇒ TypedArrayBuffer.wrap(r.response.asInstanceOf[ArrayBuffer]))
 
     /*
         // Scala.js DOM 0.8.1 supports binary data, earlier versions don't

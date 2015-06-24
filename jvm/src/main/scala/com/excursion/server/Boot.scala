@@ -7,7 +7,6 @@ import akka.stream.ActorFlowMaterializer
 import akka.stream.scaladsl.Sink
 import com.typesafe.config.Config
 
-
 object Boot extends App {
   implicit val system = ActorSystem()
   implicit val fm = ActorFlowMaterializer()
@@ -15,8 +14,8 @@ object Boot extends App {
 
   val conf = Conf(system.settings.config)
   implicit val PRODUCTION_MODE = conf.production
-  implicit val todoService = new TodoApiService
-  implicit val chatService = Chat.create(system)
+  implicit val todoService = TodoApiService()
+  implicit val chatService = ChatService()
 
   val flow = Http(system).bind(conf.host, conf.port).to(Sink.foreach {
     _ handleWith handlerFlow(new ExcursionDirectives().route)

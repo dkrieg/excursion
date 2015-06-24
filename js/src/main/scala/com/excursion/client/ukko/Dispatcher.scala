@@ -34,7 +34,7 @@ trait Dispatcher {
           pendingActors = Set.empty[Actor]
           handledActors = Set.empty[Actor]
           // send message to every registered actor
-          actors.foreach { actor =>
+          actors.foreach { actor ⇒
             if (!pendingActors.contains(actor)) {
               invokeActor(actor, messageQueue.front)
             }
@@ -51,7 +51,7 @@ trait Dispatcher {
   def waitFor(actorsToWait: Actor*): Unit = {
     assert(isDispatching, "Must be dispatching when calling waitFor")
 
-    actorsToWait.foreach { actor =>
+    actorsToWait.foreach { actor ⇒
       if (pendingActors.contains(actor)) {
         assert(handledActors.contains(actor), s"Circular dependency detected while waiting for ${actor.name}")
       } else {

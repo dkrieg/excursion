@@ -1,10 +1,9 @@
 package com.excursion.client.services
 
-
 import autowire._
 import rx._
 import com.excursion.client.ukko._
-import com.excursion.shared.{TodoItem, TodoApi}
+import com.excursion.shared.{ TodoItem, TodoApi }
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.runNow
 
@@ -30,17 +29,17 @@ trait TodoStore extends Actor {
   }
 
   override def receive = {
-    case RefreshTodos =>
+    case RefreshTodos ⇒
       // load all todos from the server
-      AjaxClient[TodoApi].fetch().call().foreach { todos =>
+      AjaxClient[TodoApi].fetch().call().foreach { todos ⇒
         updateItems(todos)
       }
-    case UpdateAllTodos(todos) =>
+    case UpdateAllTodos(todos) ⇒
       updateItems(todos)
   }
 
   // return as Rx to prevent mutation in dependencies
-  def todos:Rx[Seq[TodoItem]] = items
+  def todos: Rx[Seq[TodoItem]] = items
 }
 
 // create a singleton instance of TodoStore
@@ -52,14 +51,14 @@ object TodoStore extends TodoStore {
 object TodoActions {
   def update(item: TodoItem) = {
     // inform the server to update/add the item
-    AjaxClient[TodoApi].update(item).call().foreach { todos =>
+    AjaxClient[TodoApi].update(item).call().foreach { todos ⇒
       MainDispatcher.dispatch(UpdateAllTodos(todos))
     }
   }
 
   def delete(item: TodoItem) = {
     // tell server to delete a todo
-    AjaxClient[TodoApi].delete(item.id).call().foreach { todos =>
+    AjaxClient[TodoApi].delete(item.id).call().foreach { todos ⇒
       MainDispatcher.dispatch(UpdateAllTodos(todos))
     }
   }

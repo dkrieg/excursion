@@ -1,6 +1,5 @@
 package com.excursion.client.modules
 
-
 import japgolly.scalajs.react.extra.router2.RouterCtl
 import com.excursion.client.DemoApp.Loc
 
@@ -25,7 +24,7 @@ object Todo {
 
   abstract class RxObserver[BS <: BackendScope[_, _]](scope: BS) extends OnUnmount {
     protected def observe[T](rx: Rx[T]): Unit = {
-      val obs = rx.foreach(_ => scope.forceUpdate())
+      val obs = rx.foreach(_ ⇒ scope.forceUpdate())
       // stop observing when unmounted
       onUnmount(obs.kill())
     }
@@ -41,7 +40,7 @@ object Todo {
 
     def editTodo(item: Option[TodoItem]): Unit = {
       // activate the todo dialog
-      t.modState(s => s.copy(selectedItem = item, showTodoForm = true))
+      t.modState(s ⇒ s.copy(selectedItem = item, showTodoForm = true))
     }
 
     def deleteTodo(item: TodoItem): Unit = {
@@ -57,7 +56,7 @@ object Todo {
         TodoActions.update(item)
       }
       // hide the todo dialog
-      t.modState(s => s.copy(showTodoForm = false))
+      t.modState(s ⇒ s.copy(showTodoForm = false))
     }
   }
 
@@ -65,9 +64,9 @@ object Todo {
   val component = ReactComponentB[Props]("TODO").
     initialState(State()). // initial state from TodoStore
     backend(new Backend(_)).
-    render((P, S, B) => {
-      Panel(Panel.Props("What needs to be done"), TodoList(TodoListProps(P.todos(), TodoActions.update, item => B.editTodo(Some(item)), B.deleteTodo)),
-        Button(Button.Props(() => B.editTodo(None)), Icon.plusSquare, " New"),
+    render((P, S, B) ⇒ {
+      Panel(Panel.Props("What needs to be done"), TodoList(TodoListProps(P.todos(), TodoActions.update, item ⇒ B.editTodo(Some(item)), B.deleteTodo)),
+        Button(Button.Props(() ⇒ B.editTodo(None)), Icon.plusSquare, " New"),
         // if the dialog is open, add it to the panel
         if (S.showTodoForm) TodoForm(TodoForm.Props(S.selectedItem, B.todoEdited))
         else // otherwise add an empty placeholder
@@ -78,7 +77,7 @@ object Todo {
     build
 
   /** Returns a function compatible with router location system while using our own props */
-  def apply(store: TodoStore) = (router: RouterCtl[Loc]) => {
+  def apply(store: TodoStore) = (router: RouterCtl[Loc]) ⇒ {
     component(Props(store.todos, router))
   }
 }
@@ -87,14 +86,14 @@ object TodoForm {
   // shorthand for styles
   @inline private def bss = GlobalStyles.bootstrapStyles
 
-  case class Props(item: Option[TodoItem], submitHandler: (TodoItem, Boolean) => Unit)
+  case class Props(item: Option[TodoItem], submitHandler: (TodoItem, Boolean) ⇒ Unit)
 
   case class State(item: TodoItem, cancelled: Boolean = true)
 
   class Backend(t: BackendScope[Props, State]) {
     def submitForm(): Unit = {
       // mark it as NOT cancelled (which is the default)
-      t.modState(s => s.copy(cancelled = false))
+      t.modState(s ⇒ s.copy(cancelled = false))
     }
 
     def formClosed(): Unit = {
@@ -104,31 +103,31 @@ object TodoForm {
 
     def updateDescription(e: ReactEventI) = {
       // update TodoItem content
-      t.modState(s => s.copy(item = s.item.copy(content = e.currentTarget.value)))
+      t.modState(s ⇒ s.copy(item = s.item.copy(content = e.currentTarget.value)))
     }
 
     def updatePriority(e: ReactEventI) = {
       // update TodoItem priority
       val newPri = e.currentTarget.value match {
-        case p if p == TodoHigh.toString => TodoHigh
-        case p if p == TodoNormal.toString => TodoNormal
-        case p if p == TodoLow.toString => TodoLow
+        case p if p == TodoHigh.toString ⇒ TodoHigh
+        case p if p == TodoNormal.toString ⇒ TodoNormal
+        case p if p == TodoLow.toString ⇒ TodoLow
       }
-      t.modState(s => s.copy(item = s.item.copy(priority = newPri)))
+      t.modState(s ⇒ s.copy(item = s.item.copy(priority = newPri)))
     }
   }
 
   val component = ReactComponentB[Props]("TodoForm").
-    initialStateP(p => State(p.item.getOrElse(TodoItem("", 0, "", TodoNormal, completed = false)))).
+    initialStateP(p ⇒ State(p.item.getOrElse(TodoItem("", 0, "", TodoNormal, completed = false)))).
     backend(new Backend(_)).
-    render((P, S, B) => {
+    render((P, S, B) ⇒ {
       log.debug(s"User is ${if (S.item.id == "") "adding" else "editing"} a todo")
       val headerText = if (S.item.id == "") "Add new todo" else "Edit todo"
       Modal(Modal.Props(
         // header contains a cancel button (X)
-        header = be => <.span(<.button(^.tpe := "button", bss.close, ^.onClick --> be.hide(), Icon.close), <.h4(headerText)),
+        header = be ⇒ <.span(<.button(^.tpe := "button", bss.close, ^.onClick --> be.hide(), Icon.close), <.h4(headerText)),
         // footer has the OK button that submits the form before hiding it
-        footer = be => <.span(Button(Button.Props(() => {B.submitForm(); be.hide()}), "OK")),
+        footer = be ⇒ <.span(Button(Button.Props(() ⇒ { B.submitForm(); be.hide() }), "OK")),
         // this is called after the modal has been hidden (animation is completed)
         closed = B.formClosed),
         <.div(bss.formGroup,
@@ -141,10 +140,7 @@ object TodoForm {
           <.select(bss.formControl, ^.id := "priority", ^.value := S.item.priority.toString, ^.onChange ==> B.updatePriority,
             <.option(^.value := TodoHigh.toString, "High"),
             <.option(^.value := TodoNormal.toString, "Normal"),
-            <.option(^.value := TodoLow.toString, "Low")
-          )
-        )
-      )
+            <.option(^.value := TodoLow.toString, "Low"))))
     }).
     build
 
