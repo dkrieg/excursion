@@ -6,14 +6,14 @@ the original source but can indicate the following projects as source:
 - [akka-http-scala-js-websocket-chat](https://github.com/jrudolph/akka-http-scala-js-websocket-chat)
 - [scalajs-react](https://github.com/japgolly/scalajs-react)
 
-### The primary focus of this branch is on using the following technologies to create a reactive SPA (Single Page Application)
+##### The primary focus of this branch is on using the following technologies to create a reactive SPA (Single Page Application)
 -  [Scala](http://www.scala-lang.org)
 -  [ScalaJS](http://www.scala-js.org)
 -  [ReactJS via ScalaJS](https://github.com/japgolly/scalajs-react)
 -  [Akka HTTP (in lieu of Spray)](http://doc.akka.io/docs/akka-stream-and-http-experimental/1.0-M2/scala/http/)
 -  [SBT](http://www.scala-sbt.org)
 
-### The remaining following technical features are enabled:
+##### The remaining following technical features are enabled:
 - [x] Automatic server restart via SBT plugin *sbt-revolver*
 - [x] ScalaJS/ScalaVM cross project compilation via SBT plugin *sbt-scalajs*
 - [x] Display of project dependencies via SBT plugin *sbt-dependency-graph*
