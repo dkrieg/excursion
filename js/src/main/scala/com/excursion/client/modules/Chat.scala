@@ -22,6 +22,9 @@ object Chat {
     webSocket: Option[WebSocket] = None,
     login: Option[String] = None)
 
+  val `jabber-user` = Ref[Input]("jabber-user")
+  val `jabber-message` = Ref[TextArea]("jabber-message")
+
   class Backend(t: BackendScope[Props, State]) extends OnUnmount {
     private def initWebSocket[T](wsUri: String) = {
       val ws = new WebSocket(wsUri)
@@ -39,9 +42,9 @@ object Chat {
     }
 
     def connect(e: ReactEventI): Unit = {
+      e.preventDefault()
       log.info("logging into chat server")
-      val ownerDocument = e.target.ownerDocument
-      val userE = ownerDocument.getElementById("jabber-user").asInstanceOf[Input]
+      val userE = `jabber-user`(t).get.getDOMNode()
       t.modState(s ⇒ s.copy(
         webSocket = Some(initWebSocket(t.props.baseUrl.value.replace("http", "ws") + "chat?name=" + userE.value)),
         login = Some(userE.value)))
@@ -54,7 +57,8 @@ object Chat {
     }
 
     def sendMessage(e: ReactEventI) = {
-      val messageE = e.target.ownerDocument.getElementById("jabber-message").asInstanceOf[TextArea]
+      e.preventDefault()
+      val messageE = `jabber-message`(t).get.getDOMNode()
       t.state.webSocket.get.send(messageE.value)
       messageE.value = ""
     }
@@ -74,21 +78,20 @@ object Chat {
       <.div(^.`class` := "row",
         <.div(^.`class` := "col-md-6",
           <.h4("Jabber"),
-          <.form(^.`class` := "form-horizontal",
-            <.div(^.`class` := "form-group",
-              if (S.login.isEmpty) {
-                Seq(
-                  <.div(<.input(^.id := "jabber-user", ^.`class` := "form-control", ^.`type` := "text", ^.placeholder := "Enter your Username ...", ^.autoFocus := "true")),
-                  <.p(
-                    <.div(
-                      <.button(^.`type` := "button", ^.`class` := "btn btn-primary", ^.onClick ==> B.connect, "Login"))))
-              } else {
-                Seq(
-                  <.div(<.textarea(^.id := "jabber-message", ^.`class` := "form-control", ^.rows := "3", ^.cols := "70", ^.placeholder := "Enter your message ...")),
-                  <.p(
-                    <.div(
-                      <.button(^.`type` := "button", ^.`class` := "btn btn-primary", ^.onClick ==> B.sendMessage, "Jabber away"))))
-              }))),
+          <.div(^.`class` := "form-group",
+            if (S.login.isEmpty) {
+              Seq(
+                <.div(<.input(^.ref := `jabber-user`, ^.`class` := "form-control", ^.`type` := "text", ^.placeholder := "Enter your Username ...", ^.autoFocus := "true")),
+                <.p(
+                  <.div(
+                    <.button(^.`type` := "button", ^.`class` := "btn btn-primary", ^.onClick ==> B.connect, "Login"))))
+            } else {
+              Seq(
+                <.div(<.textarea(^.ref := `jabber-message`, ^.`class` := "form-control", ^.rows := "3", ^.cols := "70", ^.placeholder := "Enter your message ...")),
+                <.p(
+                  <.div(
+                    <.button(^.`type` := "button", ^.`class` := "btn btn-primary", ^.onClick ==> B.sendMessage, "Jabber away"))))
+            })),
         <.div(^.`class` := "col-md-1"),
         <.div(^.`class` := "well col-md-5",
           <.h4("Jibber Jabber"),
