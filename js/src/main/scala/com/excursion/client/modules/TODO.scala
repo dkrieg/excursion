@@ -1,20 +1,19 @@
 package com.excursion.client.modules
 
-import japgolly.scalajs.react.extra.router2.RouterCtl
 import com.excursion.client.DemoApp.Loc
-
-import scalacss.ScalaCssReact._
-import japgolly.scalajs.react._
-import japgolly.scalajs.react.extra.OnUnmount
-import japgolly.scalajs.react.vdom.prefix_<^._
-import rx._
-import rx.ops._
 import com.excursion.client.components.Bootstrap._
-import com.excursion.client.components.TodoList.TodoListProps
 import com.excursion.client.components._
 import com.excursion.client.logger._
 import com.excursion.client.services._
 import com.excursion.shared._
+import japgolly.scalajs.react._
+import japgolly.scalajs.react.extra.OnUnmount
+import japgolly.scalajs.react.extra.router2.RouterCtl
+import japgolly.scalajs.react.vdom.all._
+import rx._
+import rx.ops._
+
+import scalacss.ScalaCssReact._
 
 object Todo {
 
@@ -60,26 +59,25 @@ object Todo {
     }
   }
 
-  // create the React component for ToDo management
-  val component = ReactComponentB[Props]("TODO").
-    initialState(State()). // initial state from TodoStore
-    backend(new Backend(_)).
-    render((P, S, B) ⇒ {
-      Panel(Panel.Props("What needs to be done"), TodoList(TodoListProps(P.todos(), TodoActions.update, item ⇒ B.editTodo(Some(item)), B.deleteTodo)),
-        Button(Button.Props(() ⇒ B.editTodo(None)), Icon.plusSquare, " New"),
-        // if the dialog is open, add it to the panel
-        if (S.showTodoForm) TodoForm(TodoForm.Props(S.selectedItem, B.todoEdited))
-        else // otherwise add an empty placeholder
-          Seq.empty[ReactElement])
-    }).
-    componentDidMount(_.backend.mounted()).
-    configure(OnUnmount.install).
-    build
+  private val component = ReactComponentB[Props]("TODO")
+    .initialState(State()) // initial state from TodoStore
+    .backend(new Backend(_))
+    .render { (P, S, B) ⇒
+      Panel(Panel.Props("What needs to be done")) {
+        Seq(
+          TodoList(TodoList.Props(P.todos(), TodoActions.update, item ⇒ B.editTodo(Some(item)), B.deleteTodo)),
+          Button(Button.Props(() ⇒ B.editTodo(None)), Icon.plusSquare, " New"),
+          if (S.showTodoForm) TodoForm(TodoForm.Props(S.selectedItem, B.todoEdited))
+          else Seq.empty[ReactElement])
+      }
+    }
+    .componentDidMount(_.backend.mounted())
+    .configure(OnUnmount.install)
+    .build
 
   /** Returns a function compatible with router location system while using our own props */
-  def apply(store: TodoStore) = (router: RouterCtl[Loc]) ⇒ {
-    component(Props(store.todos, router))
-  }
+  def apply(store: TodoStore) = (router: RouterCtl[Loc]) ⇒ component(Props(store.todos, router))
+
 }
 
 object TodoForm {
@@ -98,6 +96,9 @@ object TodoForm {
 
     def formClosed(): Unit = {
       // call parent handler with the new item and whether form was OK or cancelled
+      if (t.state.item.content.isEmpty) {
+        t.modState(s => s.copy(cancelled = true))
+      }
       t.props.submitHandler(t.state.item, t.state.cancelled)
     }
 
@@ -117,32 +118,54 @@ object TodoForm {
     }
   }
 
-  val component = ReactComponentB[Props]("TodoForm").
-    initialStateP(p ⇒ State(p.item.getOrElse(TodoItem("", 0, "", TodoNormal, completed = false)))).
-    backend(new Backend(_)).
-    render((P, S, B) ⇒ {
-      log.debug(s"User is ${if (S.item.id == "") "adding" else "editing"} a todo")
-      val headerText = if (S.item.id == "") "Add new todo" else "Edit todo"
-      Modal(Modal.Props(
-        // header contains a cancel button (X)
-        header = be ⇒ <.span(<.button(^.tpe := "button", bss.close, ^.onClick --> be.hide(), Icon.close), <.h4(headerText)),
-        // footer has the OK button that submits the form before hiding it
-        footer = be ⇒ <.span(Button(Button.Props(() ⇒ { B.submitForm(); be.hide() }), "OK")),
-        // this is called after the modal has been hidden (animation is completed)
-        closed = B.formClosed),
-        <.div(bss.formGroup,
-          <.label(^.`for` := "description", "Description"),
-          <.input(^.tpe := "text", bss.formControl, ^.id := "description", ^.value := S.item.content,
-            ^.placeholder := "write description", ^.onChange ==> B.updateDescription)),
-        <.div(bss.formGroup,
-          <.label(^.`for` := "priority", "Priority"),
-          // using defaultValue = "Normal" instead of option/selected due to React
-          <.select(bss.formControl, ^.id := "priority", ^.value := S.item.priority.toString, ^.onChange ==> B.updatePriority,
-            <.option(^.value := TodoHigh.toString, "High"),
-            <.option(^.value := TodoNormal.toString, "Normal"),
-            <.option(^.value := TodoLow.toString, "Low"))))
-    }).
-    build
+  private val component = ReactComponentB[Props]("TodoForm")
+    .initialStateP(p ⇒ State(p.item.getOrElse(TodoItem("", 0, "", TodoNormal, completed = false))))
+    .backend(new Backend(_))
+    .render { (P, S, B) ⇒
+      log.debug(s"User is ${if (S.item.id.isEmpty) "adding" else "editing"} a todo")
+      Modal(Modal.Props(header(if (S.item.id.isEmpty) "Add new todo" else "Edit todo"), footer(B), B.formClosed)) {
+        Seq(
+          div(bss.formGroup,
+            label(`for` := "description", "Description"),
+            input(tpe := "text", bss.formControl, id := "description", value := S.item.content,
+              placeholder := "write description", onChange ==> B.updateDescription)),
+          div(bss.formGroup,
+            label(`for` := "priority", "Priority"),
+            select(bss.formControl, id := "priority", value := S.item.priority.toString, onChange ==> B.updatePriority,
+              option(value := TodoHigh.toString, "High"),
+              option(value := TodoNormal.toString, "Normal"),
+              option(value := TodoLow.toString, "Low"))))
+      }
+    }
+    .build
 
   def apply(props: Props) = component(props)
+
+  private object header {
+    private val component =
+      ReactComponentB[(Bootstrap.Modal.Backend, String)]("TodoFormHeader")
+        .render { t ⇒
+          val (be, headerText) = t
+          span(button(tpe := "button", bss.close, onClick --> be.hide(), Icon.close), h4(headerText))
+        }
+        .build
+
+    def apply(headerText: String) = (be: Bootstrap.Modal.Backend) ⇒ component((be, headerText))
+  }
+
+  private object footer {
+    private val component =
+      ReactComponentB[(Backend, Bootstrap.Modal.Backend)]("TodoFormFooter")
+        .render { t ⇒
+          Button(Button.Props(() ⇒ {
+            val (b, be) = t
+            b.submitForm()
+            be.hide()
+          }), "OK")
+        }
+        .build
+
+    def apply(b: Backend) = (be: Bootstrap.Modal.Backend) ⇒ component((b, be))
+  }
 }
+

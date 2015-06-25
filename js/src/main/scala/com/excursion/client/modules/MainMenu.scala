@@ -6,7 +6,7 @@ import com.excursion.client.DemoApp.{ ChatLoc, TodoLoc, DashboardLoc, Loc }
 import scalacss.ScalaCssReact._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.OnUnmount
-import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.vdom.all._
 import rx._
 import rx.ops._
 import com.excursion.client.components.Bootstrap.CommonStyle
@@ -39,9 +39,9 @@ object MainMenu {
   private def buildTodoMenu(props: Props): ReactNode = {
     val todoCount = props.todos().count(!_.completed)
     Seq(
-      <.span("Todo "),
-      if (todoCount > 0) <.span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, todoCount)
-      else <.span())
+      span("Todo "),
+      if (todoCount > 0) span(bss.labelOpt(CommonStyle.danger), bss.labelAsBadge, todoCount)
+      else span())
   }
 
   private val menuItems = Seq(
@@ -49,19 +49,19 @@ object MainMenu {
     MenuItem(buildTodoMenu, Icon.check, TodoLoc),
     MenuItem(_ ⇒ "Chat", Icon.envelope, ChatLoc))
 
-  private val MainMenu = ReactComponentB[Props]("MainMenu").
-    stateless.
-    backend(new Backend(_)).
-    render((P, _, B) ⇒ {
-      <.ul(bss.navbar)(
+  private val component = ReactComponentB[Props]("MainMenu")
+    .stateless
+    .backend(new Backend(_))
+    .render((P, _, B) ⇒ {
+      ul(bss.navbar)(
         // build a list of menu items
         for (item ← menuItems) yield {
-          <.li((P.currentLoc == item.location) ?= (^.className := "active"),
+          li((P.currentLoc == item.location) ?= (className := "active"),
             P.ctl.link(item.location)(item.icon, " ", item.label(P)))
         })
-    }).
-    componentDidMount(_.backend.mounted()).
-    build
+    })
+    .componentDidMount(_.backend.mounted())
+    .build
 
-  def apply(props: Props) = MainMenu(props)
+  def apply(props: Props) = component(props)
 }

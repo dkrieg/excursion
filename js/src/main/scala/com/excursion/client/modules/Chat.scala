@@ -6,7 +6,7 @@ import com.excursion.shared.ChatMessage
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.extra.OnUnmount
 import japgolly.scalajs.react.extra.router2.BaseUrl
-import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.vdom.all._
 import org.scalajs.dom
 import org.scalajs.dom._
 import org.scalajs.dom.html.{ Input, TextArea }
@@ -64,42 +64,42 @@ object Chat {
     }
   }
 
-  val Chat = ReactComponentB[Props]("Chat").
-    initialState(State()).
-    backend(new Backend(_)).
-    render((P, S, B) ⇒ {
+  private val component = ReactComponentB[Props]("Chat")
+    .initialState(State())
+    .backend(new Backend(_))
+    .render { (P, S, B) ⇒
       def renderMessage(msg: ChatMessage) = {
-        <.div(^.`class` := "message",
-          <.p(^.`class` := "speech",
-            <.span(^.`class` := "dateTime", msg.time),
-            <.span(^.`class` := "text", msg.text),
-            <.span(^.`class` := "user", msg.user)))
+        div(`class` := "message",
+          p(`class` := "speech",
+            span(`class` := "dateTime", msg.time),
+            span(`class` := "text", msg.text),
+            span(`class` := "user", msg.user)))
       }
-      <.div(^.`class` := "row",
-        <.div(^.`class` := "col-md-6",
-          <.h4("Jabber"),
-          <.div(^.`class` := "form-group",
+      div(`class` := "row",
+        div(`class` := "col-md-6",
+          h4("Jabber"),
+          div(`class` := "form-group",
             if (S.login.isEmpty) {
               Seq(
-                <.div(<.input(^.ref := `jabber-user`, ^.`class` := "form-control", ^.`type` := "text", ^.placeholder := "Enter your Username ...", ^.autoFocus := "true")),
-                <.p(
-                  <.div(
-                    <.button(^.`type` := "button", ^.`class` := "btn btn-primary", ^.onClick ==> B.connect, "Login"))))
+                div(input(ref := `jabber-user`, `class` := "form-control", `type` := "text", placeholder := "Enter your Username ...", autoFocus := "true")),
+                p(
+                  div(
+                    button(`type` := "button", `class` := "btn btn-primary", onClick ==> B.connect, "Login"))))
             } else {
               Seq(
-                <.div(<.textarea(^.ref := `jabber-message`, ^.`class` := "form-control", ^.rows := "3", ^.cols := "70", ^.placeholder := "Enter your message ...")),
-                <.p(
-                  <.div(
-                    <.button(^.`type` := "button", ^.`class` := "btn btn-primary", ^.onClick ==> B.sendMessage, "Jabber away"))))
+                div(textarea(ref := `jabber-message`, `class` := "form-control", rows := "3", cols := "70", placeholder := "Enter your message ...")),
+                p(
+                  div(
+                    button(`type` := "button", `class` := "btn btn-primary", onClick ==> B.sendMessage, "Jabber away"))))
             })),
-        <.div(^.`class` := "col-md-1"),
-        <.div(^.`class` := "well col-md-5",
-          <.h4("Jibber Jabber"),
-          <.div(^.`class` := "messages",
+        div(`class` := "col-md-1"),
+        div(`class` := "well col-md-5",
+          h4("Jibber Jabber"),
+          div(`class` := "messages",
             S.messages map renderMessage)))
-    }).
-    configure(OnUnmount.install).
-    build
+    }
+    .configure(OnUnmount.install)
+    .build
 
-  def apply(props: Props) = Chat(props)
+  def apply(props: Props) = component(props)
 }

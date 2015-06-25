@@ -2,7 +2,7 @@ package com.excursion.client
 
 import japgolly.scalajs.react.React
 import japgolly.scalajs.react.extra.router2._
-import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.vdom.all._
 import org.scalajs.dom
 import com.excursion.client.components.GlobalStyles
 import com.excursion.client.logger._
@@ -31,14 +31,14 @@ object DemoApp extends js.JSApp {
   }.renderWith(layout)
 
   def layout(c: RouterCtl[Loc], r: Resolution[Loc]) = {
-    <.div(
-      <.nav(^.className := "navbar navbar-inverse navbar-fixed-top")(
-        <.div(^.className := "container")(
-          <.div(^.className := "navbar-header")(<.span(^.className := "navbar-brand")("SPA Example")),
-          <.div(^.className := "collapse navbar-collapse")(
+    div(
+      nav(className := "navbar navbar-inverse navbar-fixed-top")(
+        div(className := "container")(
+          div(className := "navbar-header")(span(className := "navbar-brand")("SPA Example")),
+          div(className := "collapse navbar-collapse")(
             MainMenu(MainMenu.Props(c, r.page, TodoStore.todos))))),
       // currently active module is shown in this container
-      <.div(^.className := "container")(r.render()))
+      div(className := "container")(r.render()))
   }
 
   @JSExport

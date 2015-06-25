@@ -1,8 +1,8 @@
 package com.excursion.client.components
 
-import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{ BackendScope, ReactComponentB }
-import org.scalajs.dom.raw.HTMLCanvasElement
+import japgolly.scalajs.react.vdom.all._
+import japgolly.scalajs.react.{BackendScope, ReactComponentB, Ref}
+import org.scalajs.dom.html.Canvas
 
 import scala.scalajs.js
 import scala.scalajs.js.JSConverters._
@@ -48,7 +48,7 @@ class JSChart(ctx: js.Dynamic) extends js.Object {
 
 object Chart {
 
-  // avaiable chart styles
+  // available chart styles
   sealed trait ChartStyle
 
   case object LineChart extends ChartStyle
@@ -59,19 +59,20 @@ object Chart {
 
   class Backend(t: BackendScope[ChartProps, _])
 
-  val Chart = ReactComponentB[ChartProps]("Chart")
-    .render((P) ⇒ {
-      <.canvas(^.width := P.width, ^.height := P.height)
-    }).componentDidMount(scope ⇒ {
-      // access context of the canvas
-      val ctx = scope.getDOMNode().asInstanceOf[HTMLCanvasElement].getContext("2d")
+  val `chart-canvas` = Ref[Canvas]("chart-canvas")
+
+  private val component = ReactComponentB[ChartProps]("Chart")
+    .render { P ⇒
+      canvas(ref := `chart-canvas`, width := P.width, height := P.height)
+    }.componentDidMount { scope ⇒
+      val ctx = `chart-canvas`(scope).get.getDOMNode().getContext("2d")
       // create the actual chart using the 3rd party component
       scope.props.style match {
         case LineChart ⇒ new JSChart(ctx).Line(scope.props.data)
         case BarChart ⇒ new JSChart(ctx).Bar(scope.props.data)
         case _ ⇒ throw new IllegalArgumentException
       }
-    }).build
+    }.build
 
-  def apply(props: ChartProps) = Chart(props)
+  def apply(props: ChartProps) = component(props)
 }

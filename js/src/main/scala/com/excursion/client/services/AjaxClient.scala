@@ -47,16 +47,6 @@ object AjaxClient extends autowire.Client[ByteBuffer, Unpickler, Pickler] {
       data = Pickle.intoBytes(req.args),
       responseType = "arraybuffer",
       headers = Map("Content-Type" -> "application/octet-stream")).map(r ⇒ TypedArrayBuffer.wrap(r.response.asInstanceOf[ArrayBuffer]))
-
-    /*
-        // Scala.js DOM 0.8.1 supports binary data, earlier versions don't
-        dom.ext.Ajax.post(
-          url = "/api/" + req.path.mkString("/"),
-          data = Pickle.intoBytes(req.args),
-          responseType = "arraybuffer",
-          headers = Map("Content-Type" -> "application/octet-stream")
-        ).map(r => TypedArrayBuffer.wrap(r.response.asInstanceOf[ArrayBuffer]))
-    */
   }
 
   def read[Result: Unpickler](p: ByteBuffer) = Unpickle[Result].fromBytes(p)

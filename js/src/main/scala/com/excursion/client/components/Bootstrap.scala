@@ -1,7 +1,7 @@
 package com.excursion.client.components
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.vdom.all._
 
 import scala.language.implicitConversions
 import scala.scalajs.js
@@ -32,11 +32,12 @@ object Bootstrap {
 
     case class Props(onClick: () ⇒ Unit, style: CommonStyle.Value = CommonStyle.default, addStyles: Seq[StyleA] = Seq())
 
-    val component = ReactComponentB[Props]("Button")
+    private val component = ReactComponentB[Props]("Button")
       .render { (P, C) ⇒
-        <.button(bss.buttonOpt(P.style), P.addStyles, ^.tpe := "button", ^.onClick --> P.onClick())(C)
+        button(bss.buttonOpt(P.style), P.addStyles, tpe := "button", onClick --> P.onClick())(C)
       }.build
 
+    def apply(props: Props)(children: ⇒ Seq[ReactNode]) = component(props, children)
     def apply(props: Props, children: ReactNode*) = component(props, children)
     def apply() = component
   }
@@ -47,12 +48,12 @@ object Bootstrap {
 
     val component = ReactComponentB[Props]("Panel")
       .render { (P, C) ⇒
-        <.div(bss.panelOpt(P.style))(
-          <.div(bss.panelHeading)(P.heading),
-          <.div(bss.panelBody)(C))
+        div(bss.panelOpt(P.style))(
+          div(bss.panelHeading)(P.heading),
+          div(bss.panelBody)(C))
       }.build
 
-    def apply(props: Props, children: ReactNode*) = component(props, children)
+    def apply(props: Props)(children: ⇒ Seq[ReactNode] = Seq.empty) = component(props, children)
     def apply() = component
   }
 
@@ -80,12 +81,12 @@ object Bootstrap {
       .backend(new Backend(_))
       .render((P, C, _, B) ⇒ {
         val modalStyle = bss.modal
-        <.div(modalStyle.modal, modalStyle.fade, ^.role := "dialog", ^.aria.hidden := true,
-          <.div(modalStyle.dialog,
-            <.div(modalStyle.content,
-              <.div(modalStyle.header, P.header(B)),
-              <.div(modalStyle.body, C),
-              <.div(modalStyle.footer, P.footer(B)))))
+        div(modalStyle.modal, modalStyle.fade, role := "dialog", aria.hidden := true,
+          div(modalStyle.dialog,
+            div(modalStyle.content,
+              div(modalStyle.header, P.header(B)),
+              div(modalStyle.body, C),
+              div(modalStyle.footer, P.footer(B)))))
       })
       .componentDidMount(scope ⇒ {
         val P = scope.props
@@ -97,6 +98,7 @@ object Bootstrap {
       .build
 
     def apply(props: Props, children: ReactNode*) = component(props, children)
+    def apply(props: Props)(children: => Seq[ReactNode]) = component(props, children)
     def apply() = component
   }
 }

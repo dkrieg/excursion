@@ -1,14 +1,14 @@
 package com.excursion.client.components
 
 import japgolly.scalajs.react.ReactNode
-import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.vdom.all._
 
 /**
  * Provides type-safe access to Font Awesome icons
  */
 object Icon {
   type Icon = ReactNode
-  def apply(name: String): Icon = <.i(^.className := s"fa fa-$name")
+  def apply(name: String): Icon = i(className := s"fa fa-$name")
 
   def adjust = apply("adjust")
   def adn = apply("adn")
