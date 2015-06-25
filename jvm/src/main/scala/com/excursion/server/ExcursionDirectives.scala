@@ -34,7 +34,7 @@ class ExcursionDirectives(implicit production: Boolean = false,
   chatSession: ChatSession,
   dispatcher: ExecutionContextExecutor) extends Directives {
 
-  system.scheduler.schedule(15.second, 15.second) {
+  system.scheduler.schedule(1.minute, 1.minute) {
     val time = LocalTime.now.toString
     chatSession.injectMessage(ChatMessage(
       user = "clock",
