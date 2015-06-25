@@ -1,9 +1,9 @@
 package com.excursion.client.services
 
 import autowire._
-import rx._
 import com.excursion.client.ukko._
-import com.excursion.shared.{ TodoItem, TodoApi }
+import com.excursion.shared.{TodoApi, TodoItem}
+import rx._
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.runNow
 

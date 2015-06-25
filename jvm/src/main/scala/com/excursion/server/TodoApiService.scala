@@ -1,6 +1,6 @@
 package com.excursion.server
 
-import java.util.{ UUID, Date }
+import java.util.{Date, UUID}
 
 import com.excursion.shared._
 

@@ -1,8 +1,9 @@
 package com.excursion.client.components
 
+import com.excursion.client.components.Bootstrap.CommonStyle._
+
 import scalacss.Defaults._
 import scalacss.mutable
-import com.excursion.client.components.Bootstrap.CommonStyle._
 
 class BootstrapStyles(implicit r: mutable.Register) extends StyleSheet.Inline()(r) {
 

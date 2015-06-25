@@ -1,9 +1,10 @@
 package com.excursion.client.components
 
+import com.excursion.client.components.Bootstrap.{Button, CommonStyle}
+import com.excursion.shared._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.all._
-import com.excursion.client.components.Bootstrap.{ CommonStyle, Button }
-import com.excursion.shared._
+
 import scalacss.ScalaCssReact._
 
 object TodoList {

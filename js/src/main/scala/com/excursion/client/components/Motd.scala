@@ -1,11 +1,11 @@
 package com.excursion.client.components
 
 import autowire._
-import japgolly.scalajs.react.vdom.all._
-import japgolly.scalajs.react.{ BackendScope, ReactComponentB }
 import com.excursion.client.components.Bootstrap._
 import com.excursion.client.services.AjaxClient
 import com.excursion.shared.TodoApi
+import japgolly.scalajs.react.vdom.all._
+import japgolly.scalajs.react.{BackendScope, ReactComponentB}
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.runNow
 

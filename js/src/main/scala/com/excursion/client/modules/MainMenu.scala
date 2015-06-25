@@ -1,19 +1,19 @@
 package com.excursion.client.modules
 
-import japgolly.scalajs.react.extra.router2.RouterCtl
-import com.excursion.client.DemoApp.{ ChatLoc, TodoLoc, DashboardLoc, Loc }
-
-import scalacss.ScalaCssReact._
-import japgolly.scalajs.react._
-import japgolly.scalajs.react.extra.OnUnmount
-import japgolly.scalajs.react.vdom.all._
-import rx._
-import rx.ops._
+import com.excursion.client.DemoApp.{ChatLoc, DashboardLoc, Loc, TodoLoc}
 import com.excursion.client.components.Bootstrap.CommonStyle
 import com.excursion.client.components.Icon._
 import com.excursion.client.components._
 import com.excursion.client.services._
 import com.excursion.shared.TodoItem
+import japgolly.scalajs.react._
+import japgolly.scalajs.react.extra.OnUnmount
+import japgolly.scalajs.react.extra.router2.RouterCtl
+import japgolly.scalajs.react.vdom.all._
+import rx._
+import rx.ops._
+
+import scalacss.ScalaCssReact._
 
 object MainMenu {
   // shorthand for styles

@@ -9,10 +9,10 @@ import japgolly.scalajs.react.extra.router2.BaseUrl
 import japgolly.scalajs.react.vdom.all._
 import org.scalajs.dom
 import org.scalajs.dom._
-import org.scalajs.dom.html.{ Input, TextArea }
+import org.scalajs.dom.html.{Input, TextArea}
 
+import scala.scalajs.js.typedarray.ArrayBuffer
 import scala.scalajs.js.typedarray.TypedArrayBuffer.wrap
-import scala.scalajs.js.typedarray.{ ArrayBuffer, TypedArrayBuffer }
 
 object Chat {
   case class Props(baseUrl: BaseUrl)

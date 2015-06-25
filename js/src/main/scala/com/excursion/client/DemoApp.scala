@@ -1,14 +1,13 @@
 package com.excursion.client
 
-import japgolly.scalajs.react.React
-import japgolly.scalajs.react.extra.router2._
-import japgolly.scalajs.react.vdom.all._
-import org.scalajs.dom
 import com.excursion.client.components.GlobalStyles
 import com.excursion.client.logger._
 import com.excursion.client.modules._
 import com.excursion.client.services.TodoStore
-import org.scalajs.dom.WebSocket
+import japgolly.scalajs.react.React
+import japgolly.scalajs.react.extra.router2._
+import japgolly.scalajs.react.vdom.all._
+import org.scalajs.dom
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport

@@ -5,18 +5,18 @@ import java.time.LocalTime
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.MediaTypes._
-import akka.http.scaladsl.model.StatusCodes.{ NotFound, OK }
-import akka.http.scaladsl.model.ws.{ BinaryMessage, Message, TextMessage }
-import akka.http.scaladsl.model.{ HttpEntity, HttpResponse }
+import akka.http.scaladsl.model.StatusCodes.{NotFound, OK}
+import akka.http.scaladsl.model.ws.{BinaryMessage, Message, TextMessage}
+import akka.http.scaladsl.model.{HttpEntity, HttpResponse}
 import akka.http.scaladsl.server.Directives
 import akka.stream.FlowMaterializer
 import akka.stream.scaladsl.Flow
-import akka.stream.stage.{ TerminationDirective, SyncDirective, Context, PushStage }
+import akka.stream.stage.{Context, PushStage, SyncDirective, TerminationDirective}
 import akka.util.ByteString
 import autowire.Core
-import boopickle.{ Pickle, Pickler, Unpickle, Unpickler }
+import boopickle.{Pickle, Pickler, Unpickle, Unpickler}
 import com.excursion.server.Pages._
-import com.excursion.shared.{ ChatMessage, TodoApi }
+import com.excursion.shared.{ChatMessage, TodoApi}
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.concurrent.duration._

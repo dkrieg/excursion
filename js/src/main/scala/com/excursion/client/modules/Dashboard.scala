@@ -1,10 +1,10 @@
 package com.excursion.client.modules
 
+import com.excursion.client.DemoApp.{ChatLoc, Loc, TodoLoc}
+import com.excursion.client.components._
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.extra.router2.RouterCtl
 import japgolly.scalajs.react.vdom.all._
-import com.excursion.client.DemoApp.{ ChatLoc, TodoLoc, Loc }
-import com.excursion.client.components._
 
 object Dashboard {
   // create the React component for Dashboard

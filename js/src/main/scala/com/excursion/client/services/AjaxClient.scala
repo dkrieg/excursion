@@ -5,13 +5,14 @@ import java.nio.ByteBuffer
 import boopickle._
 import org.scalajs.dom
 
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.{Future, Promise}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.runNow
 import scala.scalajs.js.typedarray._
 
 object AjaxClient extends autowire.Client[ByteBuffer, Unpickler, Pickler] {
 
   import org.scalajs.dom.ext.AjaxException
+
   import scala.scalajs.js.typedarray.TypedArrayBufferOps._
 
   // Scala.js DOM 0.8.0 does not support binary data, so we implement this here
