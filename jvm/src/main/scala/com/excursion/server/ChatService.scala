@@ -23,7 +23,6 @@ object ChatService {
           context.watch(subscriber)
           subscribers += subscriber
           sendAdminMessage(s"$name joined!")
-        case msg: ChatMessage ⇒ dispatch(msg)
         case msg: ReceivedMessage ⇒ dispatch(msg.toChatMessage)
         case ParticipantLeft(person) ⇒ sendAdminMessage(s"$person left!")
         case Terminated(sub) ⇒ subscribers -= sub // clean up dead subscribers

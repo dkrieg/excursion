@@ -34,14 +34,6 @@ class ExcursionDirectives(implicit production: Boolean = false,
   chatSession: ChatSession,
   dispatcher: ExecutionContextExecutor) extends Directives {
 
-  system.scheduler.schedule(1.minute, 1.minute) {
-    val time = LocalTime.now.toString
-    chatSession.injectMessage(ChatMessage(
-      user = "clock",
-      text = s"Bling! The time is $time.",
-      time = time))
-  }
-
   val page =
     if (production) template("opt") _
     else template("fastopt") _
