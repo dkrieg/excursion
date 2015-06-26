@@ -22,6 +22,12 @@ object Boot extends App {
   })
 
   flow.run
+  println(
+    s"""
+       | Accepting HTTP connections on port ${conf.port}
+       | production mode is ${if(conf.production) "on" else "off"}
+       | host is ${conf.host}
+       | """.stripMargin)
 }
 
 trait Conf {

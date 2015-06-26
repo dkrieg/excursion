@@ -11,8 +11,8 @@ object Pages {
         meta(content := "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no", name := "viewport"),
         link(href := "stylesheets/main.min.css", rel := "stylesheet", `type` := "text/css")),
       body(
-        script(src := s"js/excursion-$ops.js"),
-        script(src := "js/excursion-jsdeps.js"),
+        script(src := s"js/excursion-client-$ops.js"),
+        script(src := "js/excursion-client-jsdeps.js"),
         program))
   }
 

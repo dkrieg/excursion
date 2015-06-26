@@ -1,6 +1,8 @@
 import com.typesafe.sbt.SbtNativePackager.autoImport._
 import com.typesafe.sbt.less.Import._
 import com.typesafe.sbt.packager.archetypes._
+import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.Docker
+import com.typesafe.sbt.packager.Keys._
 import com.typesafe.sbt.web.Import.WebKeys._
 import com.typesafe.sbt.web.Import._
 import com.typesafe.sbt.web.SbtWeb
@@ -17,6 +19,16 @@ object ExcursionBuild extends Build {
   val scalaJsOutputDir = settingKey[File]("directory for javascript files output by scalajs")
   val copyWebJarResources = taskKey[Unit]("Copy resources from WebJars")
   val sharedSrcDir = "shared"
+
+  lazy val excursion = project.in(file(".")).
+    aggregate(client, server).
+    settings(
+      name := "excursion",
+      version := Settings.version,
+      commands += ReleaseCmd,
+      publish := {},
+      publishLocal := {}
+    )
 
   lazy val shared =
     crossProject.
@@ -56,6 +68,7 @@ object ExcursionBuild extends Build {
     ).
     jsSettings(workbenchSettings: _*).
     jsSettings(
+      name := "excursion-client",
       libraryDependencies ++= Settings.clientDependencies.value,
       productionBuild := false,
       elideOptions := Seq(),
@@ -99,11 +112,32 @@ object ExcursionBuild extends Build {
       scalaJsOutputDir := (classDirectory in Compile).value / "web" / "js",
       NativePackagerKeys.batScriptExtraDefines += "set PRODUCTION_MODE=true",
       NativePackagerKeys.bashScriptExtraDefines += "export PRODUCTION_MODE=true",
-      Revolver.reStart <<= Revolver.reStart dependsOn (fastOptJS in(client, Compile))
-
+      Revolver.reStart <<= Revolver.reStart dependsOn (fastOptJS in(client, Compile)),
+      dockerBaseImage := "java:8",
+      dockerExposedPorts := Seq(8080),
+      compile in Compile <<= (compile in Compile) dependsOn (fastOptJS in(client, Compile)),
+      resourceGenerators in Compile += Def.task {
+        val files = ((crossTarget in(client, Compile)).value ** "*.js").get
+        val mappings: Seq[(File,String)] = files pair rebase((crossTarget in(client, Compile)).value, ((resourceManaged in  Compile).value / "assets/").getAbsolutePath )
+        val map: Seq[(File, File)] = mappings.map { case (s, t) => (s, file(t))}
+        IO.copy(map).toSeq
+      }.taskValue
     ).
-    enablePlugins(SbtWeb).
-    enablePlugins(JavaAppPackaging)
+    enablePlugins(SbtWeb, JavaAppPackaging)
+
+  val ReleaseCmd = Command.command("release") {
+    state =>
+      "set productionBuild in client := true" ::
+      "set elideOptions in client := Seq(\"-Xelide-below\", \"WARNING\")" ::
+      "sharedJS/test" ::
+      "sharedJS/fullOptJS" ::
+      "sharedJS/packageJSDependencies" ::
+      "sharedJVM/test" ::
+      "sharedJVM/stage" ::
+      "set productionBuild in client := false" ::
+      "set elideOptions in client := Seq()" ::
+      state
+  }
 }
 
 object Settings {

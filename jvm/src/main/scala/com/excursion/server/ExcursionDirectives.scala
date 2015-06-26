@@ -43,12 +43,13 @@ class ExcursionDirectives(implicit production: Boolean = false,
   }
 
   val page =
-    if (production) template("fullopt") _
+    if (production) template("opt") _
     else template("fastopt") _
 
   val route =
     get {
       pathSingleSlash {
+        println("accessing web page...")
         complete(HttpResponse(entity = HttpEntity(`text/html`, page(todo).render)))
       } ~ pathPrefix("srcmaps") {
         if (production) complete(NotFound)
