@@ -14,11 +14,11 @@ the original source but can indicate the following projects as source:
 -  [SBT](http://www.scala-sbt.org)
 
 ##### The following technical features are enabled:
-- [x] Automatic server restart via SBT plugin *sbt-revolver*
-- [x] ScalaJS/ScalaVM cross project compilation via SBT plugin *sbt-scalajs*
-- [x] Display of project dependencies via SBT plugin *sbt-dependency-graph*
-- [x] Auto refresh of HTML containing ScalaJS via SBT plugin *workbench*
-- [x] Deployment to Docker via SBT plugin *sbt-native-packager*
+- [x] Automatic server restart via SBT plugin *[sbt-revolver](https://github.com/spray/sbt-revolver)*
+- [x] ScalaJS/ScalaVM cross project compilation via SBT plugin *[sbt-scalajs](https://github.com/scala-js/scala-js)*
+- [x] Display of project dependencies via SBT plugin *[sbt-dependency-graph](https://github.com/jrudolph/sbt-dependency-graph)*
+- [x] Auto refresh of HTML containing ScalaJS via SBT plugin *[workbench](https://github.com/lihaoyi/workbench)*
+- [x] Deployment to Docker via SBT plugin *[sbt-native-packager](https://github.com/sbt/sbt-native-packager)*
 - [x] Client-side to Server-side logging via AjaxAppender *thanks to [scalajs-spa-tutorial](https://github.com/ochrons/scalajs-spa-tutorial)*
 - [x] ScalaJS-to-Scala RPC over Ajax *thanks to [autowire](https://github.com/lihaoyi/autowire)*
 - [x] Fast Binary object serialization over WebSocket *thanks to [boopickle](https://github.com/ochrons/boopickle) and [Akka HTTP](http://doc.akka.io/docs/akka-stream-and-http-experimental/1.0-M2/scala/http/)*
