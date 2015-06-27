@@ -27,9 +27,9 @@ the original source but can indicate the following projects as source:
 ##### To run locally using SBT:
 ```
 sbt (starts SBT session) 
-~re-start (start a forked process via *sbt-revolver*)
+~re-start (start a forked process via sbt-revolver)
 launch browser to http://localhost:8080
-re-stop  (stops the forked process via *sbt-revolver*)
+re-stop  (stops the forked process via sbt-revolver)
 exit (stops SBT session)
 ```
 
