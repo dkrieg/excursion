@@ -39,9 +39,11 @@ In order to run with Docker it is assumed you have setup your local environment 
 Using docker-machine
 docker-machine start dev
 Ensure that VirtualBox has the Networked attached to NAT port forwarding enabled for as follows
-Name|Protocol|Host IP|Host Port|Guest IP|Guest Port
-----|--------|-------|---------|--------|----------
-http|TCP|127.0.0.1|8080| |8080
+
+Name | Protocol | Host IP   | Host Port | Guest IP | Guest Port
+---- | -------- | --------- | --------- | -------- | ----------
+http | TCP      | 127.0.0.1 | 8080      |          | 8080
+
 sbt docker:publishLocal (to create and publish a local docker container.  This will display the new Image ID)
 docker run -a STDOUT --name excursion -p 8080:8080 <image id of excursion> (this will run the new container)
 launch browser to http://localhost:8080
